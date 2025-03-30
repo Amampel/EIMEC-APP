@@ -1,50 +1,42 @@
 workflows:
   build-ios:
-    name: EIMEC APP
-    instance_type: mac_studio
+    name: Build iOS App
+    instance_type: mac_mini_m1
+    max_build_duration: 60
     environment:
-      vars:
-        XCODE_WORKSPACE: "ios/App.xcworkspace"
-        XCODE_SCHEME: "App"
-        BUNDLE_ID: "com.eimec.app"
       xcode: latest
+      vars:
+        BUNDLE_ID: com.eimec.app
+        APP_NAME: EIMEC
+      node: 18.18.2
+    cache:
+      cache_paths:
+        - ~/.npm
     scripts:
       - name: Instalar dependencias
         script: |
           npm install
-      - name: Construir Vue app
+      - name: Compilar Vue (build de producción)
         script: |
           npm run build
-      - name: Sincronizar con Capacitor
+      - name: Sincronizar Capacitor
         script: |
           npx cap sync ios
-      - name: Preparar iOS build
+      - name: Construir proyecto iOS con Xcode
         script: |
           cd ios
-          pod install
-      - name: Compilar app iOS
-        script: |
-          xcodebuild clean archive \
-            -workspace "$XCODE_WORKSPACE" \
-            -scheme "$XCODE_SCHEME" \
-            -configuration Release \
-            -archivePath $CM_BUILD_DIR/build/App.xcarchive \
-            DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
-            PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_ID \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE"
-      - name: Exportar IPA
-        script: |
-          xcodebuild -exportArchive \
-            -archivePath $CM_BUILD_DIR/build/App.xcarchive \
-            -exportOptionsPlist exportOptions.plist \
-            -exportPath $CM_BUILD_DIR/build/export
-
+          xcodebuild -workspace App.xcworkspace \
+                     -scheme App \
+                     -sdk iphoneos \
+                     -configuration Release \
+                     archive -archivePath $CM_BUILD_DIR/build/App.xcarchive
     artifacts:
-      - build/export/*.ipa
-
+      - build/**/App.xcarchive
+      - ios/build/Build/Products/Release-iphoneos/*.app
     publishing:
       email:
         recipients:
-          - tu-email@example.com
+          - tu-email@dominio.com
+        notify:
+          success: true
+          failure: true
