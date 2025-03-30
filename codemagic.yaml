@@ -33,7 +33,7 @@ workflows:
 
       - name: Construir proyecto iOS con Xcode
         script: |
-          cd ios
+          cd ios/App
           xcodebuild -workspace App.xcworkspace \
                      -scheme App \
                      -sdk iphoneos \
