@@ -1,7 +1,7 @@
 workflows:
   build-ios:
     name: EIMEC APP
-    instance_type: mac_pro
+    instance_type: mac_studio
     environment:
       vars:
         XCODE_WORKSPACE: "ios/App.xcworkspace"
