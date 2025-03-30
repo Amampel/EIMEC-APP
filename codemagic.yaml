@@ -1,0 +1,50 @@
+workflows:
+  build-ios:
+    name: EIMEC APP
+    instance_type: mac_mini
+    environment:
+      vars:
+        XCODE_WORKSPACE: "ios/App.xcworkspace"
+        XCODE_SCHEME: "App"
+        BUNDLE_ID: "com.eimec.app"
+      xcode: latest
+    scripts:
+      - name: Instalar dependencias
+        script: |
+          npm install
+      - name: Construir Vue app
+        script: |
+          npm run build
+      - name: Sincronizar con Capacitor
+        script: |
+          npx cap sync ios
+      - name: Preparar iOS build
+        script: |
+          cd ios
+          pod install
+      - name: Compilar app iOS
+        script: |
+          xcodebuild clean archive \
+            -workspace "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -archivePath $CM_BUILD_DIR/build/App.xcarchive \
+            DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM \
+            PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_ID \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE"
+      - name: Exportar IPA
+        script: |
+          xcodebuild -exportArchive \
+            -archivePath $CM_BUILD_DIR/build/App.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath $CM_BUILD_DIR/build/export
+
+    artifacts:
+      - build/export/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - tu-email@example.com
