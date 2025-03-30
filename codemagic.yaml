@@ -13,15 +13,24 @@ workflows:
       cache_paths:
         - ~/.npm
     scripts:
+      - name: Setup SSH
+        script: |
+          echo "$CM_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Instalar dependencias
         script: |
           npm install
+
       - name: Compilar Vue (build de producción)
         script: |
           npm run build
+
       - name: Sincronizar Capacitor
         script: |
           npx cap sync ios
+
       - name: Construir proyecto iOS con Xcode
         script: |
           cd ios
@@ -30,9 +39,11 @@ workflows:
                      -sdk iphoneos \
                      -configuration Release \
                      archive -archivePath $CM_BUILD_DIR/build/App.xcarchive
+
     artifacts:
       - build/**/App.xcarchive
       - ios/build/Build/Products/Release-iphoneos/*.app
+
     publishing:
       email:
         recipients:
