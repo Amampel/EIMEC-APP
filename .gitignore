@@ -1,0 +1,10 @@
+node_modules
+dist
+.vscode
+.env
+ios/Pods
+android/.gradle
+android/.idea
+android/build
+.DS_Store
+*.log

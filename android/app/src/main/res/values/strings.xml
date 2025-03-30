@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EIMEC</string>
+    <string name="title_activity_main">EIMEC</string>
+    <string name="package_name">com.eimec.app</string>
+    <string name="custom_url_scheme">com.eimec.app</string>
+</resources>
