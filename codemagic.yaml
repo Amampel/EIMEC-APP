@@ -39,4 +39,4 @@ workflows:
           - tu-email@dominio.com
         notify:
           success: true
-          failure: true
+          failure: false
