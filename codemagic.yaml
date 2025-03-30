@@ -8,6 +8,9 @@ workflows:
       vars:
         BUNDLE_ID: com.eimec.app
         APP_NAME: EIMEC
+      ios_signing:
+        distribution_type: development
+        bundle_identifier: com.eimec.app
       node: 18.18.2
     cache:
       cache_paths:
